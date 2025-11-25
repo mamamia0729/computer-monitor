@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Monitoring Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card.active {
+            border: 3px solid #667eea;
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .stat-card .card-body {
+            padding: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .badge-online {
+            background-color: #28a745;
+        }
+        
+        .badge-offline {
+            background-color: #dc3545;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .status-online {
+            color: #28a745;
+        }
+        
+        .status-offline {
+            color: #dc3545;
+        }
+        
+        .search-box {
+            margin-bottom: 1rem;
+        }
+        
+        .last-update {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        
+        .btn-action {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            margin: 0 0.1rem;
+        }
+        
+        .action-cell {
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 768px) {
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <h1 class="mb-0">
+                <i class="fas fa-desktop me-2"></i>
+                Computer Monitoring Dashboard
+            </h1>
+            <p class="mb-0 mt-2 last-update" id="lastUpdate">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Statistics Cards -->
+        <div class="row" id="statsContainer">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card stat-card" id="card-all" onclick="filterByStatus('all')">
+                    <div class="card-body text-center">
+                        <p class="stat-label">Total Computers</p>
+                        <h2 class="stat-number text-primary" id="totalComputers">-</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card stat-card" id="card-online" onclick="filterByStatus('online')">
+                    <div class="card-body text-center">
+                        <p class="stat-label">Online</p>
+                        <h2 class="stat-number text-success" id="onlineCount">-</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card stat-card" id="card-offline" onclick="filterByStatus('offline')">
+                    <div class="card-body text-center">
+                        <p class="stat-label">Offline</p>
+                        <h2 class="stat-number text-danger" id="offlineCount">-</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card stat-card" id="card-uptime">
+                    <div class="card-body text-center">
+                        <p class="stat-label">Uptime %</p>
+                        <h2 class="stat-number text-info" id="uptimePercent">-</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Computer List Table -->
+        <div class="table-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Computer Status <span id="filterLabel" class="badge bg-secondary" style="display: none;"></span>
+                </h4>
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search computers...">
+                </div>
+            </div>
+            
+            <div id="tableLoading" class="loading">
+                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                <p class="mt-3">Loading data...</p>
+            </div>
+            
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            
+            <div id="tableContainer" style="display: none;">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="computersTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th onclick="sortTable(0)" style="cursor: pointer;">
+                                    Computer Name <i class="fas fa-sort"></i>
+                                </th>
+                                <th onclick="sortTable(1)" style="cursor: pointer;">
+                                    Location <i class="fas fa-sort"></i>
+                                </th>
+                                <th onclick="sortTable(2)" style="cursor: pointer;">
+                                    Status <i class="fas fa-sort"></i>
+                                </th>
+                                <th onclick="sortTable(3)" style="cursor: pointer;">
+                                    Last Checked <i class="fas fa-sort"></i>
+                                </th>
+                                <th onclick="sortTable(4)" style="cursor: pointer;">
+                                    Last Seen <i class="fas fa-sort"></i>
+                                </th>
+                                <th>
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="computersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Configuration
+        const REFRESH_INTERVAL = {{ refresh_interval }} * 1000; // Convert to milliseconds
+        let allComputers = [];
+        let sortDirection = 1;
+        let sortColumn = 1; // Default sort by status
+        let currentFilter = 'all'; // Track current filter
+
+        // Fetch and display data
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/status');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                
+                const data = await response.json();
+                updateDashboard(data);
+                hideError();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showError('Unable to load monitoring data. Please ensure the monitoring script is running.');
+            }
+        }
+
+        // Update dashboard with new data
+        function updateDashboard(data) {
+            // Update statistics
+            document.getElementById('totalComputers').textContent = data.totalComputers || 0;
+            document.getElementById('onlineCount').textContent = data.onlineCount || 0;
+            document.getElementById('offlineCount').textContent = data.offlineCount || 0;
+            
+            const uptime = data.totalComputers > 0 
+                ? ((data.onlineCount / data.totalComputers) * 100).toFixed(1)
+                : 0;
+            document.getElementById('uptimePercent').textContent = uptime + '%';
+            
+            // Update last update time
+            document.getElementById('lastUpdate').textContent = 
+                'Last updated: ' + data.lastUpdate + ' | Auto-refresh every ' + (REFRESH_INTERVAL / 1000) + ' seconds';
+            
+            // Store computers
+            allComputers = data.computers || [];
+            
+            // Re-apply current filter to preserve user's view
+            filterByStatus(currentFilter);
+            
+            // Show table, hide loading
+            document.getElementById('tableLoading').style.display = 'none';
+            document.getElementById('tableContainer').style.display = 'block';
+        }
+
+        // Display computers in table
+        function displayComputers(computers) {
+            const tbody = document.getElementById('computersTableBody');
+            tbody.innerHTML = '';
+            
+            computers.forEach(computer => {
+                const row = tbody.insertRow();
+                
+                // Computer name
+                const cellName = row.insertCell(0);
+                cellName.textContent = computer.ComputerName;
+                
+                // Location
+                const cellLocation = row.insertCell(1);
+                cellLocation.innerHTML = `<span class="badge bg-info">${computer.Location || 'Unknown'}</span>`;
+                
+                // Status
+                const cellStatus = row.insertCell(2);
+                const statusClass = computer.Status === 'Online' ? 'badge-online' : 'badge-offline';
+                const statusIcon = computer.Status === 'Online' ? 'fa-check-circle' : 'fa-times-circle';
+                cellStatus.innerHTML = `<span class="badge ${statusClass}">
+                    <i class="fas ${statusIcon} me-1"></i>${computer.Status}
+                </span>`;
+                
+                // Last checked
+                const cellTime = row.insertCell(3);
+                cellTime.textContent = computer.TestTime;
+                
+                // Last seen (with time duration for offline computers)
+                const cellLastSeen = row.insertCell(4);
+                if (computer.LastSeen && computer.LastSeen !== 'Unknown') {
+                    if (computer.Status === 'Offline') {
+                        const lastSeenTime = new Date(computer.LastSeen);
+                        const now = new Date();
+                        const duration = getTimeDuration(lastSeenTime, now);
+                        cellLastSeen.innerHTML = `<span class="text-danger">
+                            ${computer.LastSeen}<br>
+                            <small class="text-muted">(${duration} ago)</small>
+                        </span>`;
+                    } else {
+                        cellLastSeen.innerHTML = `<span class="text-success">${computer.LastSeen}</span>`;
+                    }
+                } else if (computer.LastSeen === 'Unknown') {
+                    cellLastSeen.innerHTML = '<span class="text-muted">Unknown</span>';
+                } else {
+                    cellLastSeen.innerHTML = '<span class="text-muted">-</span>';
+                }
+                
+                // Actions column
+                const cellActions = row.insertCell(5);
+                cellActions.classList.add('action-cell');
+                const restartBtn = document.createElement('button');
+                restartBtn.className = 'btn btn-sm btn-warning btn-action';
+                restartBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Restart RDP';
+                restartBtn.title = 'Restart RDP Service';
+                restartBtn.onclick = () => restartRDP(computer.ComputerName, restartBtn);
+                cellActions.appendChild(restartBtn);
+                
+                // Highlight offline rows
+                if (computer.Status === 'Offline') {
+                    row.classList.add('table-danger');
+                }
+            });
+        }
+        
+        // Calculate time duration in human-readable format
+        function getTimeDuration(startTime, endTime) {
+            const diff = Math.floor((endTime - startTime) / 1000); // seconds
+            
+            if (diff < 60) {
+                return diff + 's ago';
+            } else if (diff < 3600) {
+                const mins = Math.floor(diff / 60);
+                return mins + 'm ago';
+            } else if (diff < 86400) {
+                const hours = Math.floor(diff / 3600);
+                const mins = Math.floor((diff % 3600) / 60);
+                return hours + 'h ' + mins + 'm ago';
+            } else {
+                const days = Math.floor(diff / 86400);
+                const hours = Math.floor((diff % 86400) / 3600);
+                return days + 'd ' + hours + 'h ago';
+            }
+        }
+
+        // Filter by status
+        function filterByStatus(status) {
+            currentFilter = status;
+            document.getElementById('searchInput').value = ''; // Clear search
+            
+            // Update active card styling
+            document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
+            
+            let filtered = allComputers;
+            let filterLabel = document.getElementById('filterLabel');
+            
+            if (status === 'online') {
+                filtered = allComputers.filter(c => c.Status === 'Online');
+                document.getElementById('card-online').classList.add('active');
+                filterLabel.textContent = 'Showing Online Only';
+                filterLabel.style.display = 'inline-block';
+            } else if (status === 'offline') {
+                filtered = allComputers.filter(c => c.Status === 'Offline');
+                document.getElementById('card-offline').classList.add('active');
+                filterLabel.textContent = 'Showing Offline Only';
+                filterLabel.style.display = 'inline-block';
+            } else {
+                document.getElementById('card-all').classList.add('active');
+                filterLabel.style.display = 'none';
+            }
+            
+            displayComputers(filtered);
+        }
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            // Apply current filter first
+            let filtered = allComputers;
+            if (currentFilter === 'online') {
+                filtered = allComputers.filter(c => c.Status === 'Online');
+            } else if (currentFilter === 'offline') {
+                filtered = allComputers.filter(c => c.Status === 'Offline');
+            }
+            
+            // Then apply search
+            if (searchTerm) {
+                filtered = filtered.filter(computer => 
+                    computer.ComputerName.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            displayComputers(filtered);
+        });
+
+        // Sort table
+        function sortTable(columnIndex) {
+            sortColumn = columnIndex;
+            sortDirection *= -1;
+            
+            const sorted = [...allComputers].sort((a, b) => {
+                let valA, valB;
+                
+                switch(columnIndex) {
+                    case 0: // Computer Name
+                        valA = a.ComputerName.toLowerCase();
+                        valB = b.ComputerName.toLowerCase();
+                        break;
+                    case 1: // Location
+                        valA = a.Location || '';
+                        valB = b.Location || '';
+                        break;
+                    case 2: // Status
+                        valA = a.Status;
+                        valB = b.Status;
+                        break;
+                    case 3: // Time
+                        valA = a.TestTime;
+                        valB = b.TestTime;
+                        break;
+                    case 4: // Last Seen
+                        valA = a.LastSeen || '';
+                        valB = b.LastSeen || '';
+                        break;
+                }
+                
+                if (valA < valB) return -1 * sortDirection;
+                if (valA > valB) return 1 * sortDirection;
+                return 0;
+            });
+            
+            displayComputers(sorted);
+        }
+
+        // Restart RDP service on remote computer
+        async function restartRDP(computerName, button) {
+            // Confirm action
+            if (!confirm(`Restart RDP service on ${computerName}?\n\nThis will briefly disconnect any active RDP sessions.`)) {
+                return;
+            }
+            
+            // Disable button and show loading state
+            const originalHTML = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Restarting...';
+            
+            try {
+                const response = await fetch('/api/restart-rdp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ computerName: computerName })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Success
+                    button.innerHTML = '<i class="fas fa-check"></i> Success';
+                    button.classList.remove('btn-warning');
+                    button.classList.add('btn-success');
+                    
+                    // Show success message
+                    alert(`✓ Success!\n\n${result.message}\n\nOutput:\n${result.output}`);
+                    
+                    // Reset button after 5 seconds
+                    setTimeout(() => {
+                        button.innerHTML = originalHTML;
+                        button.classList.remove('btn-success');
+                        button.classList.add('btn-warning');
+                        button.disabled = false;
+                    }, 5000);
+                } else {
+                    // Failure
+                    button.innerHTML = '<i class="fas fa-times"></i> Failed';
+                    button.classList.remove('btn-warning');
+                    button.classList.add('btn-danger');
+                    
+                    // Show error message
+                    alert(`✗ Failed!\n\n${result.message}\n\nError:\n${result.error || 'Unknown error'}`);
+                    
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        button.innerHTML = originalHTML;
+                        button.classList.remove('btn-danger');
+                        button.classList.add('btn-warning');
+                        button.disabled = false;
+                    }, 3000);
+                }
+            } catch (error) {
+                console.error('Error restarting RDP:', error);
+                button.innerHTML = '<i class="fas fa-times"></i> Error';
+                button.classList.remove('btn-warning');
+                button.classList.add('btn-danger');
+                
+                alert(`✗ Error!\n\nFailed to communicate with server:\n${error.message}`);
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('btn-danger');
+                    button.classList.add('btn-warning');
+                    button.disabled = false;
+                }, 3000);
+            }
+        }
+        
+        // Error handling
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('tableLoading').style.display = 'none';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Initialize dashboard
+        fetchData();
+        filterByStatus('all'); // Set default filter
+        
+        // Auto-refresh
+        setInterval(fetchData, REFRESH_INTERVAL);
+        
+        console.log('Dashboard initialized - Auto-refresh every ' + (REFRESH_INTERVAL / 1000) + ' seconds');
+    </script>
+</body>
+</html>
