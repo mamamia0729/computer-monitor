@@ -1,0 +1,64 @@
+# Data files (auto-generated, should not be committed)
+data/status.json
+data/history.json
+
+# Log files
+logs/*.log
+logs/*
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# CSV file with actual computer list (may contain sensitive info)
+# Uncomment if you don't want to share your computer list
+# connectivity-report.csv
+
+# Backup files
+*.bak
+*.backup
+*.old
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# Windows shortcuts
+*.lnk

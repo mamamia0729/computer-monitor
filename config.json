@@ -1,0 +1,19 @@
+{
+  "csvFilePath": "C:\\Users\\tladm\\connectivity-report.csv",
+  "dataDirectory": "C:\\Users\\tladm\\computer-monitor\\data",
+  "logDirectory": "C:\\Users\\tladm\\computer-monitor\\logs",
+  "pingSettings": {
+    "timeoutSeconds": 2,
+    "count": 1,
+    "parallelThrottle": 20
+  },
+  "monitoringInterval": 120,
+  "dashboardSettings": {
+    "refreshIntervalSeconds": 30,
+    "port": 5000,
+    "host": "0.0.0.0"
+  },
+  "historySettings": {
+    "maxEvents": 100
+  }
+}
