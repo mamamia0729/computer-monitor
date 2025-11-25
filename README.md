@@ -233,6 +233,7 @@ See [docs/DEPLOYMENT-GUIDE.md](docs/DEPLOYMENT-GUIDE.md) for more troubleshootin
 
 ## 📝 Documentation
 
+- **[FEATURE-ARCHITECTURE.md](docs/FEATURE-ARCHITECTURE.md)** - Detailed component breakdowns for all features
 - **[DEPLOYMENT-GUIDE.md](docs/DEPLOYMENT-GUIDE.md)** - Complete deployment instructions
 - **[TECHNICAL-SPEC.txt](docs/TECHNICAL-SPEC.txt)** - Technical architecture
 - **[DEMO-GUIDE.md](docs/DEMO-GUIDE.md)** - Presentation guide
