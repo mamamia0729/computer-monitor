@@ -252,10 +252,7 @@ Built for IT operations teams managing large Windows computer fleets. Designed t
 
 ## 👨‍💻 Author
 
-**Thinh Le**
-- GitHub: [@mamamia0729](https://github.com/mamamia0729)
-- Role: Tier 1 Desktop Support | Azure Administrator (AZ-104)
-- Certifications: AZ-104 | CCNA | CompTIA Security+ | Network+ | A+
+Author: Thinh Le
 
 ---
 
