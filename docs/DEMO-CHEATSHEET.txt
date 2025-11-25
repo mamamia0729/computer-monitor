@@ -1,0 +1,135 @@
+================================================================================
+           COMPUTER MONITORING DASHBOARD - DEMO CHEAT SHEET
+================================================================================
+
+WHAT IT DOES:
+  Shows which of our 125 computers are online/offline in real-time
+  Updates automatically every 30 seconds
+  Works on any device (PC, phone, tablet, TV)
+
+WHY WE NEED IT:
+  ✓ See problems before users call
+  ✓ Be proactive instead of reactive
+  ✓ Know which machines need attention
+  ✓ Perfect for TV display in support area
+
+================================================================================
+DEMO SCRIPT (3 MINUTES)
+================================================================================
+
+STEP 1: START IT (10 seconds)
+  1. Open PowerShell
+  2. Type: cd C:\Users\tladm\computer-monitor
+  3. Type: .\start-all.ps1
+  4. Two windows open (leave them running)
+
+STEP 2: OPEN DASHBOARD (10 seconds)
+  1. Open browser
+  2. Go to: http://localhost:5000
+  3. Dashboard appears!
+
+STEP 3: SHOW FEATURES (2 minutes)
+
+  A. OVERVIEW (30 sec)
+     - Point to 4 cards at top
+     - "125 computers, 116 online, 9 offline = 92.8% uptime"
+
+  B. CLICK FILTERING (30 sec)
+     - Click RED "Offline" card → See only problem computers
+     - Click GREEN "Online" card → See only healthy ones
+     - Click "Total" → See all
+
+  C. LAST SEEN (30 sec)
+     - Point to "Last Seen" column
+     - "Shows when offline computers were last online"
+     - "Example: '2h 15m ago' means offline for 2 hours"
+
+  D. SEARCH (30 sec)
+     - Type computer name in search box
+     - Instantly filters
+
+STEP 4: SHOW NETWORK ACCESS (30 sec)
+  1. Open browser on phone/tablet
+  2. Go to: http://10.200.10.37:5000
+  3. Same dashboard!
+  4. "Works on TV displays too - F11 for fullscreen"
+
+================================================================================
+KEY TALKING POINTS
+================================================================================
+
+BENEFITS:
+  → Proactive support (fix before users complain)
+  → See all problems at once
+  → Perfect for team visibility (TV display)
+  → Track uptime patterns
+  → FREE - no licenses needed
+
+ANSWERS TO QUESTIONS:
+  Q: Need to install on every computer?
+  A: NO! Only runs on one computer (mine). Everyone uses web browser.
+
+  Q: What if your computer turns off?
+  A: Dashboard stops. Recommend dedicated PC or server.
+
+  Q: Can we monitor more computers?
+  A: YES! Just add to CSV file. No limit.
+
+  Q: Email alerts?
+  A: Not yet, but easy to add as next feature.
+
+  Q: Cost?
+  A: FREE. Uses existing hardware. No subscriptions.
+
+================================================================================
+URLS TO REMEMBER
+================================================================================
+
+  Local Access:    http://localhost:5000
+  Network Access:  http://10.200.10.37:5000
+
+================================================================================
+IF THEY APPROVE
+================================================================================
+
+NEXT STEPS:
+  1. Move to dedicated computer/server (runs 24/7)
+  2. Set up TV display in support area
+  3. Add auto-start on Windows boot
+  4. Consider email alerts as phase 2
+
+QUICK WINS:
+  → Can be running tomorrow
+  → Takes 5 minutes to set up on new computer
+  → Whole team benefits immediately
+
+================================================================================
+TROUBLESHOOTING (IF DEMO FAILS)
+================================================================================
+
+Dashboard won't load?
+  → Check both PowerShell windows are running
+  → Try: http://127.0.0.1:5000 instead
+
+Can't access from phone?
+  → Check phone is on same WiFi network
+  → Firewall might be blocking port 5000
+
+No data showing?
+  → Monitoring script needs to run at least once (2 minutes)
+
+================================================================================
+CONFIDENCE BOOSTERS
+================================================================================
+
+✓ This is already built and working
+✓ 125 computers already being monitored
+✓ You've tested everything
+✓ It's visual - dashboard speaks for itself
+✓ Solves a real problem they understand
+
+REMEMBER: Let the dashboard do the talking. It's intuitive and impressive.
+
+================================================================================
+                              YOU GOT THIS! 🚀
+================================================================================
